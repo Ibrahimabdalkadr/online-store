@@ -13,12 +13,10 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('logout', 'logout');
         Route::post('refresh', 'refresh');
     });
-
-
+    Route::group(['middleware' => ['auth:api',\App\Http\Middleware\admin::class]], function () {
+        Route::resource('user', UserController::class);
+        Route::resource('product', ProductController::class);
+        Route::resource('category', CategoryController::class);
+    });
 });
 
-Route::group(['middleware' => ['admin']], function () {
-    Route::resource('user', UserController::class);
-    Route::resource('product', ProductController::class);
-    Route::resource('category', CategoryController::class);
-});

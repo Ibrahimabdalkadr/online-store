@@ -18,11 +18,10 @@ class AuthController extends ApiController
                 'password' => 'required|string|min:6',
             ]);
             $credentials = $request->only('email', 'password');
-            if (!Auth::attempt($credentials)) {
+            if (!$token = auth()->attempt($credentials)) {
                 return $this->errorResponse('auth failed', [], 401);
             }
             $user = $request->user();
-            $token = $user->createToken('api-token')->plainTextToken;
             return $this->successResponse('success', ['token' => $token, 'user' => $user]);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
