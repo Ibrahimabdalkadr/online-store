@@ -5,7 +5,8 @@ use \App\Http\Controllers\AuthController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\ProductController;
 use \App\Http\Controllers\CategoryController;
-
+use \App\Http\Controllers\TicketController;
+use \App\Http\Controllers\MessageController;
 Route::group(['prefix' => 'v1'], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('login', 'login');
@@ -14,11 +15,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('refresh', 'refresh');
     });
 
+    Route::group(['middleware' => ['auth:api']], function () {
+    Route::resource('ticket', TicketController::class)->only('index','show','store', 'update', 'destroy');
+    Route::resource('message', MessageController::class);
+    });
 
+    Route::group(['middleware' => ['auth:api',admin::class]], function () {
+        Route::resource('user', UserController::class)->only('index','show','store', 'update', 'destroy');
+        Route::resource('product', ProductController::class);
+        Route::resource('category', CategoryController::class);
+    });
 });
 
-Route::group(['middleware' => ['admin']], function () {
-    Route::resource('user', UserController::class);
-    Route::resource('product', ProductController::class);
-    Route::resource('category', CategoryController::class);
-});
