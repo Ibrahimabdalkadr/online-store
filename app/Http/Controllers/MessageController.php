@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\SupportMessageSent;
+use App\Models\Message;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +23,7 @@ class MessageController extends ApiController
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'ticket_no' => ['required', 'string'],
+            'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
             'body' => ['required', 'string'],
         ]);
         if ($validator->fails()) {
@@ -30,23 +31,26 @@ class MessageController extends ApiController
         }
 
         try {
-        $ticket = Ticket::where('ticket_no', $request->ticket_no)->first();
+        $ticket = Ticket::where('id', $request->ticket_id)->first();
         if (!$ticket)  return $this->errorResponse('Ticket not found', [], 404);
 
         $senderId = auth()->id();
         if ($ticket->user_id === auth()->id()) {
             $receiverId = $ticket->assignedTo->id;
         } else {
-            $receiverId = $ticket->ticket->user_id;
+            $receiverId = $ticket->user_id;
         }
 
         $message = $ticket->messages()->create([
             'body' => $request->body,
             'sender_id' => $senderId,
             'receiver_id' => $receiverId,
+            'ticket_id'=> $ticket->id
+
         ]);
 
-        event(new SupportMessageSent($message));
+
+        event(new SupportMessageSent($request->user(),$message));
 
         return $this->successResponse('Message sent successfully', [
             'message' => $message
@@ -56,10 +60,11 @@ class MessageController extends ApiController
         }
     }
 
-    public function show(Ticket $ticket)
+    public function show($ticket_id)
     {
         try {
-           $messages = $ticket->messages();
+        $ticket = Ticket::where('id', $ticket_id)->first();
+        $messages = $ticket->messages;
             return $this->successResponse('Message sent successfully', [
                 'message' => $messages
             ]);

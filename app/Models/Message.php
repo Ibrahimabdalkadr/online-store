@@ -14,7 +14,6 @@ class Message extends Model
         'body',
         'sender_id',
         'receiver_id',
-        'seen',
         'ticket_id'
     ];
     public function ticket(): BelongsTo
