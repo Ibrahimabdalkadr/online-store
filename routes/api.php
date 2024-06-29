@@ -20,7 +20,9 @@ Route::group(['prefix' => 'v1'], function () {
     Route::resource('message', MessageController::class);
     });
 
-    Route::group(['middleware' => ['auth:api',admin::class]], function () {
+
+
+    Route::group(['middleware' => ['auth:api',\App\Http\Middleware\admin::class]], function () {
         Route::resource('user', UserController::class)->only('index','show','store', 'update', 'destroy');
         Route::resource('product', ProductController::class);
         Route::resource('category', CategoryController::class);

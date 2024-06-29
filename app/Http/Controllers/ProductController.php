@@ -9,6 +9,24 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends ApiController
 {
+
+    public function index(Request $request)
+    {
+        $category_id = $request->get('category_id');
+        $page = $request->get('page') ?? 1;
+        $perPage = $request->get('perPage') ?? 15;
+        try {
+        if(!$category_id){
+            $products = Product::all()->forPage($page,$perPage);
+            return $this->successResponse('',['products' => $products]);
+        }
+        $categories = Category::findOrFail($category_id);
+        $products = $categories->products;
+        return $this->successResponse('',['products' => $products]);
+        }catch (\Exception $e) {
+        return $this->errorResponse($e->getMessage());
+        }
+    }
     public function store(Request $request)
     {
         try {
@@ -44,15 +62,11 @@ class ProductController extends ApiController
     }
 
 
-    public function show(Request $request, $category_id)
+    public function show(Request $request,Product $product)
     {
         try {
-            $category = Category::findOrFail($category_id);
-            $data = $request->all();
-            $result = $category->products()->paginate($data['pageSize'] ?? 15, '*', 'page', $data['pageNo'] ?? 1);
             return $this->successResponse('', [
-                'products' => $result->items(),
-                'total' => $result->total()
+                'product' => $product,
             ]);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
