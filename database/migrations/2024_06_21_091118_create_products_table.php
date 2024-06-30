@@ -17,8 +17,11 @@ return new class extends Migration {
             $table->string('name');
             $table->string('image');
             $table->text('description')->nullable();
-            $table->float('price', 8, 2);
-            $table->float('new_price', 8, 2);
+            $table->float('price' );
+            $table->float('new_price');
+            $table->integer('rate')->default(0);
+            $table->integer('quantity')->default(0);
+            $table->boolean('featured')->default(false);
             $table->unsignedBigInteger('category_id');
             $table->timestamps();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

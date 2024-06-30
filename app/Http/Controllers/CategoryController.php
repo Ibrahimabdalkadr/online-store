@@ -13,7 +13,7 @@ class CategoryController extends ApiController
     {
         try {
             $categories = Category::all();
-            return $this->successResponse('', ['category' => $categories]);
+            return $this->successResponse('', ['categories' => $categories]);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
         }

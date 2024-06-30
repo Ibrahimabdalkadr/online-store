@@ -88,8 +88,17 @@ class ProductSeeder extends Seeder
             ],
         ];
 
-        foreach ($products as $product) {
-            Product::create($product);
+        for ($i = 0; $i < 50 ;$i++) {
+            Product::create(            [
+                'name' => fake()->text(100),
+                'image' => fake()->filePath(),
+                'description' => fake()->text(500),
+                'price' => fake()->numberBetween(100, 1000),
+                'new_price' => fake()->numberBetween(100, 1000),
+                'category_id' => fake()->numberBetween(1, 9),
+                'rate'=>fake()->numberBetween(1, 5),
+                'quantity'=>fake()->numberBetween(1, 1000),
+            ]);
         }
     }
 }

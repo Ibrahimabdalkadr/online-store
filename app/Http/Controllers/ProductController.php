@@ -13,18 +13,19 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         $category_id = $request->get('category_id');
+        $featured = $request->get('featured');
         $page = $request->get('page') ?? 1;
         $perPage = $request->get('perPage') ?? 15;
         try {
-        if(!$category_id){
-            $products = Product::all()->forPage($page,$perPage);
-            return $this->successResponse('',['products' => $products]);
-        }
-        $categories = Category::findOrFail($category_id);
-        $products = $categories->products;
-        return $this->successResponse('',['products' => $products]);
-        }catch (\Exception $e) {
-        return $this->errorResponse($e->getMessage());
+            if (!$category_id) {
+                $result = Product::with('category')->where('featured', $featured)->paginate($perPage, ['*'], 'page', $page);
+                return $this->successResponse('', ['products' => $result->items(), 'total' => $result->total()]);
+            }
+            $categories = Category::findOrFail($category_id);
+            $products = $categories->with('product');
+            return $this->successResponse('', ['products' => $products]);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage());
         }
     }
     public function store(Request $request)
@@ -62,7 +63,7 @@ class ProductController extends ApiController
     }
 
 
-    public function show(Request $request,Product $product)
+    public function show(Request $request, Product $product)
     {
         try {
             return $this->successResponse('', [
