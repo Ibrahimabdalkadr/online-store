@@ -78,7 +78,20 @@ class UserController extends ApiController
             return $this->errorResponse($e->getMessage());
         }
     }
-
+    public function favorite(Request $request)
+    {
+        try {
+            $PageNo = $request->get('page_no', 1);
+            $pageSize = $request->get('page_size', 15);
+            $result = $request->user()->favoriteProducts()->paginate($pageSize, ['*'], 'page', $PageNo);
+            return $this->successResponse('', [
+                'favoriteProducts'=> $result->items(),
+                'total' => $result->total()
+                ]);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
+    }
     public function destroy($id)
     {
         try {

@@ -20,6 +20,7 @@ Route::group(['prefix' => 'v1','postfix' => ''], function () {
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::resource('ticket', TicketController::class)->only('index', 'show', 'store', 'update', 'destroy');
         Route::resource('message', MessageController::class);
+        Route::get('user/favorite', [UserController::class,'favorite']);
     });
 
 

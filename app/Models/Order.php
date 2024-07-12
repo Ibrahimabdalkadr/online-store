@@ -10,6 +10,7 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $fillable =['user_id','total_price'];
 
     public function user(): BelongsTo
     {
@@ -18,6 +19,6 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withPivot('quantity');
+        return $this->belongsToMany(Product::class);
     }
 }
